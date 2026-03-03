@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>강의자료 파일명 변환기</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <h1>파일명 변환기</h1>
+          <p id="subtitleText" class="subtitle">강의자료 형식: [수업명][순서]-[수업일]-[교시]-[교수님성함]-[강의제목].pdf</p>
+      </div>
+      <div class="actions">
+        <div id="modeSwitch" class="mode-switch lecture">
+          <span class="mode-switch-thumb" aria-hidden="true"></span>
+          <button id="lectureModeBtn" class="btn mode active">강의자료 모드</button>
+          <button id="noteModeBtn" class="btn mode">필족 모드</button>
+        </div>
+        <button id="selectTimetableBtn" class="btn">시간표 선택</button>
+        <button id="openAdminBtn" class="btn">관리자 창</button>
+        <button id="selectOutputBtn" class="btn">출력 폴더 선택</button>
+      </div>
+    </header>
+
+    <section class="panel meta-panel">
+      <div class="meta-item">
+        <span class="meta-label">시간표</span>
+        <span id="timetablePath" class="meta-value">선택되지 않음</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">강의 수</span>
+        <span id="lectureCount" class="meta-value">0</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">출력 폴더</span>
+        <span id="outputPath" class="meta-value">선택되지 않음</span>
+      </div>
+    </section>
+
+    <section id="noteModePanel" class="panel hidden">
+      <div class="note-mode-row">
+        <label class="note-author-label">
+          필족 작성자 이름
+          <input id="noteAuthorInput" class="name-input" type="text" placeholder="예: 이의천" />
+        </label>
+        <span class="meta-label">필족 모드에서 파일명 마지막에 자동 추가됩니다. (예: ...-이의천.docx)</span>
+      </div>
+    </section>
+
+    <section class="panel drop-panel">
+      <div id="dropZone" class="drop-zone">
+        <p id="dropTitle" class="drop-title">여기에 교수님 파일을 드래그앤드롭</p>
+        <p id="dropSubtitle" class="drop-subtitle">또는 아래 버튼으로 선택</p>
+        <button id="pickFilesBtn" class="btn primary">파일 선택</button>
+        <input id="filePicker" type="file" multiple />
+      </div>
+    </section>
+
+    <section class="panel table-panel">
+      <div class="table-head">
+        <strong>변환 목록</strong>
+        <div class="table-actions">
+          <button id="toggleAllBtn" class="btn">전체 선택/해제</button>
+          <button id="clearBtn" class="btn">목록 비우기</button>
+          <button id="runBtn" class="btn primary">파일명 변환 + 복사</button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>선택</th>
+              <th>원본 파일명</th>
+              <th>과목명 선택</th>
+              <th>순서 선택</th>
+              <th>수업일 선택</th>
+              <th>시작 교시</th>
+              <th>시수</th>
+              <th>교수님 성함</th>
+              <th>강의 제목 선택</th>
+            </tr>
+          </thead>
+          <tbody id="fileTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel log-panel">
+      <strong>작업 로그</strong>
+      <pre id="logOutput" class="log"></pre>
+    </section>
+  </div>
+
+  <div id="adminModal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-head">
+        <strong>관리자 창: 강의 계획 편집</strong>
+        <button id="closeAdminBtn" class="btn">닫기</button>
+      </div>
+
+      <div class="admin-meta">
+        <label>
+          적용 연도
+          <input id="adminYearInput" class="name-input" type="number" min="2000" max="2099" />
+        </label>
+        <span id="customPlanPath" class="meta-value"></span>
+      </div>
+
+      <div class="table-actions">
+        <button id="addAdminRowBtn" class="btn">행 추가</button>
+        <button id="deleteAdminRowBtn" class="btn">선택 행 삭제</button>
+        <button id="saveAdminBtn" class="btn primary">사용자 시간표 저장</button>
+        <button id="resetAdminBtn" class="btn">사용자 시간표 삭제</button>
+      </div>
+
+      <div class="table-wrap admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>삭제</th>
+              <th>과목명</th>
+              <th>코드 접두</th>
+              <th>순서</th>
+              <th>수업일</th>
+              <th>시작교시</th>
+              <th>시수</th>
+              <th>교수님</th>
+              <th>강의제목</th>
+            </tr>
+          </thead>
+          <tbody id="adminTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="subtleVersion" class="subtle-version">v-</div>
+  <div class="subtle-contact">contact : no1eclee@gmail.com 25학번 이의천</div>
+
+  <script src="./renderer.js"></script>
+</body>
+
+</html>

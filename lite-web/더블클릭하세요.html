@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>파일명 생성기 (Lite)</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+
+<body>
+  <main class="app">
+    <header class="top">
+      <div>
+        <h1>파일명 생성기 (Lite)</h1>
+        <p id="formatText" class="desc">
+          강의자료 형식: [수업명][순서]-[수업일]-[교시]-[교수님성함]-[강의제목].pdf
+        </p>
+      </div>
+      <div id="modeSwitch" class="mode-switch lecture">
+        <span class="mode-switch-thumb" aria-hidden="true"></span>
+        <button id="lectureModeBtn" class="btn mode active">강의자료 모드</button>
+        <button id="noteModeBtn" class="btn mode">필족 모드</button>
+      </div>
+    </header>
+
+    <section class="card meta">
+      <div>
+        <span class="label">내장 시간표</span>
+        <strong id="entryCount">0개 강의</strong>
+      </div>
+      <div>
+        <span class="label">기능</span>
+        <strong>파일명 생성 + 복사/CSV 내보내기</strong>
+      </div>
+      <div>
+        <span class="label">참고</span>
+        <strong>브라우저 버전은 파일 이름변경/저장은 하지 않습니다.</strong>
+      </div>
+    </section>
+
+    <section id="noteAuthorSection" class="card note-author-card hidden">
+      <label class="row-field">
+        <span class="note-author-title">필족 작성자명 (필수)</span>
+        <input id="noteAuthorInput" type="text" placeholder="예: 여기에 이름 먼저 쓰세요!" />
+      </label>
+      <p class="note-author-help">필족 모드에서는 파일명 마지막에 이 이름이 자동으로 들어갑니다.</p>
+    </section>
+
+    <section class="card">
+      <div class="table-head">
+        <strong>변환 목록</strong>
+        <div class="actions">
+          <button id="addRowBtn" class="btn" type="button">행 추가</button>
+          <button id="toggleAllBtn" class="btn" type="button">전체 선택/해제</button>
+          <button id="clearBtn" class="btn" type="button">목록 비우기</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>선택</th>
+              <th>입력 행</th>
+              <th>과목</th>
+              <th>순서</th>
+              <th>수업일</th>
+              <th>시작교시</th>
+              <th>시수</th>
+              <th>교수님</th>
+              <th>강의제목</th>
+            </tr>
+          </thead>
+          <tbody id="rowsBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="table-head">
+        <strong>최종 파일명</strong>
+        <div class="actions">
+          <button id="copyBtn" class="btn primary" type="button">선택 항목 파일명 복사</button>
+          <button id="csvBtn" class="btn" type="button">CSV 내보내기</button>
+        </div>
+      </div>
+      <textarea id="exportArea" readonly rows="8" placeholder="여기에 생성된 파일명이 표시됩니다."></textarea>
+    </section>
+  </main>
+
+  <script src="./default-timetable.js"></script>
+  <script src="./app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,54 @@
+{
+  "name": "title-maker",
+  "version": "1.0.2",
+  "description": "강의자료 파일명을 시간표 기반으로 자동 변환하는 데스크톱 앱",
+  "main": "main.js",
+  "author": "",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test",
+    "dist:mac": "electron-builder --mac",
+    "dist:win": "electron-builder --win zip --x64",
+    "dist:win:arm64": "electron-builder --win zip --arm64",
+    "dist": "electron-builder --mac --win zip --x64"
+  },
+  "dependencies": {
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "electron": "^37.1.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.titlemaker.desktop",
+    "productName": "TitleMaker",
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "assets",
+        "to": "assets",
+        "filter": [
+          "default-timetable.xlsx"
+        ]
+      }
+    ],
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    },
+    "win": {
+      "target": [
+        "zip"
+      ]
+    }
+  }
+}
