@@ -79,3 +79,4 @@ npm run dist:win:arm64
 ```bash
 npm test
 ```
+# CHA-File-Name-Generator
