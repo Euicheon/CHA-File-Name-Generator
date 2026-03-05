@@ -82,10 +82,10 @@
       "day": 4
     },
     {
-      "id": "순환-20",
+      "id": "순환-06",
       "subject": "순환기학",
       "prefix": "순환",
-      "orderNumber": "20",
+      "orderNumber": "06",
       "lectureTitle": "심부전증(1)",
       "professor": "차동훈",
       "dateToken": "260305",
@@ -95,10 +95,10 @@
       "day": 5
     },
     {
-      "id": "순환-26",
+      "id": "순환-07",
       "subject": "순환기학",
       "prefix": "순환",
-      "orderNumber": "26",
+      "orderNumber": "07",
       "lectureTitle": "심부전증(2)",
       "professor": "차동훈",
       "dateToken": "260305",
@@ -381,10 +381,10 @@
       "day": 17
     },
     {
-      "id": "순환-06",
+      "id": "순환-20",
       "subject": "순환기학",
       "prefix": "순환",
-      "orderNumber": "06",
+      "orderNumber": "20",
       "lectureTitle": "심실빈맥과 심장성 급사, 실신",
       "professor": "권순일",
       "dateToken": "260317",
@@ -394,10 +394,10 @@
       "day": 17
     },
     {
-      "id": "순환-07",
+      "id": "순환-26",
       "subject": "순환기학",
       "prefix": "순환",
-      "orderNumber": "07",
+      "orderNumber": "26",
       "lectureTitle": "순환기 TBL (1)",
       "professor": "권순일",
       "dateToken": "260317",
