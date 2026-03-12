@@ -1,11 +1,9 @@
 const PERIOD_OPTIONS = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
 const HOURS_OPTIONS = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
-const LAST_SUBJECT_STORAGE_KEY = 'titleMaker:lastSelectedSubject';
 
 const state = {
   mode: 'lecture',
   noteAuthor: '',
-  lastSelectedSubject: '',
   timetable: null,
   outputDir: null,
   files: [],
@@ -54,7 +52,6 @@ init().catch((error) => {
 });
 
 async function init() {
-  loadLastSelectedSubject();
   bindEvents();
   renderModeUI();
   renderMeta();
@@ -169,7 +166,7 @@ function renderModeUI() {
   if (isNoteMode) {
     els.filePicker.setAttribute('accept', '.docx');
     els.subtitleText.textContent =
-      '필족 형식: [수업명][순서]-[수업일]-[교시]-[교수님성함]-[강의제목]-[작성자명].docx';
+      '필족 형식: [수업명][순서]-[수업일]-[교시]-[교수님성함]-[강의제목]-[작성자명]';
     els.dropTitle.textContent = '여기에 필족 원본 DOCX 파일을 드래그앤드롭';
     els.dropSubtitle.textContent = '저장 시 제목 규칙에 맞춘 DOCX 파일을 만듭니다.';
     els.runBtn.textContent = '필족 저장 (DOCX)';
@@ -178,7 +175,7 @@ function renderModeUI() {
 
   els.filePicker.removeAttribute('accept');
   els.subtitleText.textContent =
-    '강의자료 형식: [수업명][순서]-[수업일]-[교시]-[교수님성함]-[강의제목].pdf';
+    '강의자료 형식: [수업명][순서]-[수업일]-[교시]-[교수님성함]-[강의제목]';
   els.dropTitle.textContent = '여기에 교수님 파일을 드래그앤드롭';
   els.dropSubtitle.textContent = '또는 아래 버튼으로 선택';
   els.runBtn.textContent = '파일명 변환 + 복사';
@@ -533,7 +530,6 @@ function onTableChange(event) {
 
   if (action === 'subject') {
     file.subject = event.target.value;
-    rememberLastSelectedSubject(file.subject);
 
     const orders = getOrderOptions(file.subject);
     if (!orders.includes(file.order)) {
@@ -1026,11 +1022,11 @@ function buildTargetName(file) {
 
   const professor = normalizeProfessor(professorRaw);
   if (isNoteMode) {
-    const rawName = `${subject}${order}-${dateToken}-${period}교시-${professor}-${title}-${author}${file.ext}`;
+    const rawName = `${subject}${order}-${dateToken}-${period}교시-${professor}-${title}-${author}`;
     return sanitizeOutputName(rawName);
   }
 
-  const rawName = `${subject}${order}-${dateToken}-${period}교시-${professor}-${title}${file.ext}`;
+  const rawName = `${subject}${order}-${dateToken}-${period}교시-${professor}-${title}`;
   return sanitizeOutputName(rawName);
 }
 
@@ -1167,6 +1163,91 @@ function getTitleOptions(subject, order, currentValue) {
   return options;
 }
 
+function findDefaultSubjectEntry(entries, timetableYear) {
+  const candidates = (entries ?? [])
+    .map((entry) => ({
+      entry,
+      dateToken: getEntryDateToken(entry, timetableYear),
+    }))
+    .filter((item) => /^\d{6}$/.test(item.dateToken))
+    .sort(compareDefaultSubjectCandidates);
+
+  if (candidates.length === 0) {
+    return null;
+  }
+
+  const referenceYear = Number(timetableYear) || inferYearFromDateToken(candidates[0].dateToken);
+  const todayDateToken = buildTodayDateToken(referenceYear);
+  return (candidates.find((item) => item.dateToken >= todayDateToken) ?? candidates[0]).entry;
+}
+
+function compareDefaultSubjectCandidates(a, b) {
+  const dateCompare = a.dateToken.localeCompare(b.dateToken);
+  if (dateCompare !== 0) {
+    return dateCompare;
+  }
+
+  const periodCompare = compareSortableNumbers(a.entry?.period, b.entry?.period);
+  if (periodCompare !== 0) {
+    return periodCompare;
+  }
+
+  const orderCompare = compareSortableNumbers(a.entry?.orderNumber, b.entry?.orderNumber);
+  if (orderCompare !== 0) {
+    return orderCompare;
+  }
+
+  return String(a.entry?.subject ?? '').localeCompare(String(b.entry?.subject ?? ''), 'ko-KR');
+}
+
+function getEntryDateToken(entry, fallbackYear) {
+  const directToken = String(entry?.dateToken ?? '').trim();
+  if (/^\d{6}$/.test(directToken)) {
+    return directToken;
+  }
+
+  const month = Number(entry?.month);
+  const day = Number(entry?.day);
+  if (!Number.isFinite(month) || !Number.isFinite(day)) {
+    return '';
+  }
+
+  const year = Number(fallbackYear) || new Date().getFullYear();
+  return `${String(year).slice(-2)}${String(month).padStart(2, '0')}${String(day).padStart(2, '0')}`;
+}
+
+function buildTodayDateToken(referenceYear) {
+  const now = new Date();
+  const year = Number(referenceYear) || now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${String(year).slice(-2)}${month}${day}`;
+}
+
+function inferYearFromDateToken(dateToken) {
+  const token = String(dateToken ?? '').trim();
+  if (!/^\d{6}$/.test(token)) {
+    return 0;
+  }
+  return 2000 + Number(token.slice(0, 2));
+}
+
+function getSortableNumber(value) {
+  const num = Number(value);
+  return Number.isFinite(num) ? num : Number.POSITIVE_INFINITY;
+}
+
+function compareSortableNumbers(a, b) {
+  const left = getSortableNumber(a);
+  const right = getSortableNumber(b);
+
+  if (left === right) {
+    return 0;
+  }
+
+  return left < right ? -1 : 1;
+}
+
 function makeEmptyAdminRow() {
   return {
     remove: false,
@@ -1244,37 +1325,8 @@ function unique(values) {
   return [...new Set(values)];
 }
 
-function loadLastSelectedSubject() {
-  try {
-    const value = String(localStorage.getItem(LAST_SUBJECT_STORAGE_KEY) ?? '').trim();
-    state.lastSelectedSubject = value;
-  } catch {
-    state.lastSelectedSubject = '';
-  }
-}
-
-function rememberLastSelectedSubject(subject) {
-  const value = String(subject ?? '').trim();
-  if (!value) {
-    return;
-  }
-
-  state.lastSelectedSubject = value;
-  try {
-    localStorage.setItem(LAST_SUBJECT_STORAGE_KEY, value);
-  } catch {
-    // ignore persistence failures and continue in-memory
-  }
-}
-
 function resolveDefaultSubject() {
-  const value = String(state.lastSelectedSubject ?? '').trim();
-  if (!value) {
-    return '';
-  }
-
-  const subjects = getSubjectOptions();
-  return subjects.includes(value) ? value : '';
+  return String(findDefaultSubjectEntry(state.timetable?.entries, state.timetable?.year)?.subject ?? '').trim();
 }
 
 function extractFilePaths(fileList) {
